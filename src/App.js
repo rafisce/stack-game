@@ -1,5 +1,7 @@
+import CanvasContainer from "./components/CanvasContainer";
+
 function App() {
-  return <div className="App"></div>;
+  return <CanvasContainer />;
 }
 
 export default App;

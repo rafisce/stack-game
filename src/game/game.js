@@ -15,6 +15,7 @@ export const init = (canvasRef) => {
 };
 export const gameLoop = () => {
   console.log("game loop");
+  window.addEventListener("resize", resize);
 
   window.addEventListener("click", () => {
     if (gameEnded) {
@@ -179,4 +180,8 @@ function newGame(topLayer) {
     document.querySelector("#score").style.color = "green";
     gameEnded = true;
   }, 1000);
+}
+function resize() {
+  const canvasContainer = document.querySelector("#canvasContainer");
+  renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 }

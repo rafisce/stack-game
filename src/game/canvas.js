@@ -9,6 +9,7 @@ import { NaiveBroadphase, World } from "cannon";
 import { addLayer, originalBoxSize } from "./stack";
 
 export let camera, scene, renderer;
+export let selectiveBloom;
 export let world;
 export const loadScene = () => {
   console.log("load scene");
@@ -28,6 +29,8 @@ export const loadScene = () => {
   const directionalLight = new DirectionalLight(0xffffff, 0.6);
   directionalLight.position.set(10, 20, 0);
   scene.add(directionalLight);
+
+  // scene.background = new Color(0x865b565);
 
   const width = 10;
   const canvasContainer = document.querySelector("#canvasContainer");

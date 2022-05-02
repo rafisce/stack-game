@@ -12,7 +12,7 @@ export let camera, scene, renderer;
 export let selectiveBloom;
 export let world;
 export const loadScene = () => {
-  console.log("load scene");
+  console.log("load scene ");
 
   world = new World();
   world.gravity.set(0, -10, 0);

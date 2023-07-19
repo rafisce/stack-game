@@ -7,6 +7,9 @@ export let gameStarted = false;
 export let gameEnded = false;
 var frame = null;
 var isFading = false;
+var checkMiss
+
+
 
 export const init = (canvasRef) => {
   loadScene();
@@ -15,6 +18,28 @@ export const init = (canvasRef) => {
 };
 export const gameLoop = () => {
   console.log("game loop");
+  checkMiss = setInterval(() => {
+  const topLayer = stack[stack.length - 1];
+  const previewsLayer = stack[stack.length - 2];
+  const direction = topLayer.direction;
+
+  if (direction === "x") {
+
+    if (topLayer.threejs.position.x - topLayer.depth / 2 > (previewsLayer.threejs.position.x + previewsLayer.depth / 2)+1) {
+
+      newGame()
+      
+    }
+    
+  } else {
+     if (
+       topLayer.threejs.position.z - topLayer.width / 2 >
+       previewsLayer.threejs.position.z + previewsLayer.width / 2 + 1
+     ) {
+       newGame()
+     }
+  }
+}, 500);
   window.addEventListener("resize", resize);
 
   window.addEventListener("click", () => {
@@ -53,17 +78,6 @@ export const gameLoop = () => {
               ? stack[stack.length - 2].threejs.position.z
               : -10;
           const nextDirection = direction === "x" ? "z" : "x";
-
-          console.log(
-            "new: " +
-              topLayer.threejs.position.x +
-              " " +
-              topLayer.threejs.position.z +
-              "\npreviews: " +
-              stack[stack.length - 2].threejs.position.x +
-              " " +
-              stack[stack.length - 2].threejs.position.z
-          );
           addLayer(
             nextX,
             nextZ,
@@ -76,7 +90,7 @@ export const gameLoop = () => {
             stack[stack.length - 3].threejs.position.z;
           stack[stack.length - 2].threejs.position.x =
             stack[stack.length - 3].threejs.position.x;
-          console.log("hit");
+          //hit occurred
           frame = bloomyFrame(
             stack[stack.length - 2].threejs.position.x,
             stack[stack.length - 2].threejs.position.y,
@@ -84,9 +98,8 @@ export const gameLoop = () => {
             stack[stack.length - 2].threejs.geometry.parameters.width + 0.4,
             stack[stack.length - 2].threejs.geometry.parameters.depth + 0.4
           );
-          console.log(frame);
         } else {
-          console.log("not hit");
+          //hit didnt occure
           const newWidth = direction === "x" ? overlap : topLayer.width;
           const newDepth = direction === "z" ? overlap : topLayer.depth;
 
@@ -125,10 +138,9 @@ export const gameLoop = () => {
           const nextDirection = direction === "x" ? "z" : "x";
           addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
         }
+      } else {
+        newGame();
       }
-      // else {
-      //   newGame(topLayer);
-      // }
     }
   });
 };
@@ -160,6 +172,7 @@ export const animation = () => {
   renderer.render(scene, camera);
 };
 
+//update cannon world/physics
 export const updatePhysics = () => {
   world.step(1 / 60);
   overhangs.forEach((overhang) => {
@@ -172,16 +185,17 @@ export const disposeGame = (canvasRef) => {
   canvasRef.current.firstChild &&
     canvasRef.current.removeChild(canvasRef.current.firstChild);
   renderer.dispose();
-  console.log("dispose");
 };
 
-// function newGame(topLayer) {
-//   setTimeout(function () {
-//     document.querySelector("#tap").style.display = "flex";
-//     document.querySelector("#score").style.color = "green";
-//     gameEnded = true;
-//   }, 1000);
-// }
+//start new game
+function newGame() {
+  setTimeout(function () {
+    clearInterval(checkMiss)
+    document.querySelector("#tap").style.display = "flex";
+    document.querySelector("#score").style.color = "green";
+    gameEnded = true;
+  }, 1000);
+}
 function resize() {
   const canvasContainer = document.querySelector("#canvasContainer");
   renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
